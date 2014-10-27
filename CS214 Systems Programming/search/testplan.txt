@@ -1,0 +1,65 @@
+For my testing I used a few different cases. The first one I used the file test.txt and wrote the results to results.txt:
+test.txt had:
+H@E@llo&^
+W%O#RL!D
+
+and results.txt held the results:
+<list> d
+test1.txt 1
+</list>
+<list> e
+test1.txt 1
+</list>
+<list> h
+test1.txt 1
+</list>
+<list> llo
+test1.txt 1
+</list>
+<list> o
+test1.txt 1
+</list>
+<list> rl
+test1.txt 1
+</list>
+<list> w
+test1.txt 1
+</list>
+
+and valgrind showed no memory leaks or errors
+
+For the second one I had a directory test which held test1.txt and a subdirectory testDir2 which held test2.txt
+test1.txt had:
+hello world this program@works
+and test2.txt had:
+this is a sub directory
+
+the results.txt file was:
+<list> a
+test/testDir2/test2.txt 1
+</list>
+<list> directory
+test/testDir2/test2.txt 1
+</list>
+<list> hello
+test/test1.txt 1
+</list>
+<list> is
+test/testDir2/test2.txt 1
+</list>
+<list> program
+test/test1.txt 1
+</list>
+<list> sub
+test/testDir2/test2.txt 1
+</list>
+<list> this
+test/testDir2/test2.txt 1 test/test1.txt 1
+</list>
+<list> works
+test/test1.txt 1
+</list>
+<list> world
+test/test1.txt 1
+</list>
+which was correct correct again and valgrind also showed no errors or memory leaks. I also tested with empty files and files that dont exist and this does not cause any errors
