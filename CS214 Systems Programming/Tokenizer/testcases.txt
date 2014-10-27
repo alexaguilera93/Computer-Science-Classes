@@ -1,0 +1,51 @@
+1.
+Input:
+"\" "hello\world"
+Output:
+hello
+word
+
+2.
+Input:
+" " "print the hex of \f"
+Output:
+print
+the
+hex
+of
+[0x0c]
+
+
+3.
+Input:
+" " "\f \a \n \t"
+Output:
+[0x0c]
+[0x07]
+[0x0a]
+[0x09]
+
+4. 
+Input "r\s\v "Helr\vlo Wrsvorld"
+Output:
+Hel
+lo
+W
+o
+ld
+
+
+5
+Input " " " " " "
+Output:
+Too many => error
+
+6
+Input " "
+Output:
+Too few => error
+
+7
+Input 
+"" "" 
+Output:
