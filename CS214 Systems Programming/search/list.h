@@ -3,11 +3,6 @@
 struct Node_{
 	char* word;
 	struct fileList_ *listHead;
-	//array holding names of files word occurs in 
-	//char **filesIn;
-	//int numFilesIn;
-	//array holding count of how many times word occured in file
-	//int* occursIn;
 	struct Node_ *next;
 	int isHead;
 };
@@ -22,6 +17,8 @@ struct fileList_ {
 typedef struct fileList_ fileList;
 
 void destroyList(fileList *destroy);
+
+void MergeSort(fileList** headRef);
 
 int insert(char *wordToAdd, char *File);
 

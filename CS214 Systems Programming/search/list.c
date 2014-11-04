@@ -1,9 +1,11 @@
 #include "list.h"
 #include "tokenizer.h"
+#include "mergesort.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
+
 
 Node *head;
 //making linked list for the words and files
