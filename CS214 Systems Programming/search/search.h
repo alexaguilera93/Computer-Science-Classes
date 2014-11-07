@@ -18,10 +18,24 @@ struct fileList_ {
 };
 typedef struct fileList_ fileList;
 
+void addWord(char *word);
+
+void addFile(char *word, char *file);
+
+int isalpha(int c);
+
+int tolower(int c);
+
+void destroyNodes();
+
+void destroyFiles(fileList *fileHead);
+
+int sendString(char *inputString);
+
+char *getFileString(char *fileName);
+
 fileList* logAndList(fileList *listOne, fileList *listTwo);
 
 fileList* logOrList(fileList *listOne, fileList *listTwo);
-
-int readList(char *fileName);
 
 #endif

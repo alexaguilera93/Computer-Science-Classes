@@ -1,10 +1,15 @@
 COMPILER = gcc
 CCFLAGS = -g -Wall
-all: index
+all: index search
 
 debug:
 	make DEBUG=TRUE
 
+search: search.o
+	$(COMPILER) $(CCFLAGS) -o search search.c stokenizer.c
+
+search.o:
+	$(COMPILER) $(CCFLAGS) -c search.c stokenizer.c
 
 index: index.o
 	$(COMPILER) $(CCFLAGS) -o index main.c list.c tokenizer.c mergesort.c
@@ -17,6 +22,7 @@ CCFLAGS += -g
 endif
 
 clean:
+	rm -f search
 	rm -f index
 	rm -f *.o
 
