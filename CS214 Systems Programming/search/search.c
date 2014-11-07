@@ -123,6 +123,7 @@ int sendString(char *inputString){
 	else{
 		TokenizerT* tokenizer = TKCreate("  \n", inputString);
 		char *token = TKGetNextToken(tokenizer);
+		/*
 		if(strcmp("so", token) != 0 && strcmp("sa", token) != 0){
 			printf("Invalid Input\n");
 			free(token);
@@ -141,10 +142,110 @@ int sendString(char *inputString){
 			free(token);
 			TKDestroy(tokenizer);
 			return 0;
+		}*/
+		//do or of lists
+		if(strcmp("so", token) == 0){
+		free(token);
+		fileList *hold = NULL;
+		while((token = TKGetNextToken(tokenizer)) != NULL){
+			Node *trace1 = head;
+			//head node word is the token
+			if(strcmp(trace1->word, token) == 0){
+				if(hold == NULL){
+					hold = makeList(trace1->listHead);
+					free(token);
+					continue;
+				}
+				else{
+					fileList *newHold = logOrList(hold, trace1->listHead);
+					destroyFiles(hold);
+					free(token);
+					hold = newHold;
+					continue;
+				}
+			}
+			else{
+				while(trace1->next != NULL){
+					trace1 = trace1->next;
+					if(strcmp(trace1->word, token) == 0){
+						if(hold == NULL){
+						hold = makeList(trace1->listHead);
+						//free(token);
+						break;
+					}
+					else{
+						fileList *newHold1 = logOrList(hold, trace1->listHead);
+						destroyFiles(hold);
+						hold = newHold1;
+						//free(token);
+						break;
+					}
+					}
+				}
+				free(token);
+			}
+	
+		}
+		free(token);
+		TKDestroy(tokenizer);
+		printList(hold);
+		destroyFiles(hold);
+		return 0;
+	}
+		
+		else if(strcmp("sa", token) == 0){
+
+		}
+		else{
+		printf("Invalid Input\n");
 		}
 		return 0;
 	}
 	return 0;
+}
+
+void printList(fileList *print){
+	if(print == NULL){
+		printf("Query returned no results\n");
+	}
+	else{
+	printf("%s ", print->file);
+		while(print->next != NULL){
+			print = print->next;
+			printf("%s ", print->file);
+		}
+
+	}
+	printf("\n");
+}
+fileList *makeList(fileList *copy){
+	fileList *newFileHead;
+	newFileHead = (fileList*)malloc(sizeof(fileList));
+	memset(newFileHead, 0, sizeof(fileList));
+	char *newString;
+	int len = strlen(copy->file);
+	newString = (char*)malloc(len + 1);
+	strcpy(newString, copy->file);
+	newString[len] = '\0';
+	newFileHead->file = newString;
+	fileList *back;
+	back = newFileHead;
+	while(copy->next != NULL){
+		copy = copy->next;
+		fileList *newFile;
+		newFile = (fileList*)malloc(sizeof(fileList));
+		memset(newFile, 0, sizeof(fileList));
+		char *newStr;
+		int len1 = strlen(copy->file);
+		newStr = (char*)malloc(len1 + 1);
+		strcpy(newStr, copy->file);
+		newStr[len1] = '\0';
+		newFile->file = newStr;
+		back->next = newFile;
+		back = back->next;
+	}
+	return newFileHead;
+
 }
 //command line arguemnt is directory
 /*
@@ -180,6 +281,9 @@ void destroyNodes(){
 
 //takes head of a list of file and frees all char* and fileLists
 void destroyFiles(fileList *fileHead){
+	if(fileHead == NULL){
+	return;
+	}
 	fileList *backTrace;
 	backTrace = fileHead;
 	while(fileHead->next != NULL){
@@ -196,12 +300,12 @@ void destroyFiles(fileList *fileHead){
 void addFile(char *word, char *file){
 	char *newFile;
 	int fileLen = strlen(file);
-	newFile = malloc(fileLen + 1);
+	newFile = (char*)malloc(fileLen + 1);
 	memset(newFile, 0, fileLen + 1);
 	strcpy(newFile, file);
 	newFile[fileLen] = '\0';
 	fileList *newListIt;
-	newListIt = malloc(sizeof(fileList));
+	newListIt = (fileList*)malloc(sizeof(fileList));
 	memset(newListIt, 0, sizeof(fileList));
 	newListIt->file = newFile;
 	Node *trace;
@@ -277,10 +381,51 @@ fileList* logAndList(fileList *listOne, fileList *listTwo){
 
 //perform a logical OR on 2 lists, returns head of new list that is logical OR of nodes in listOne and listTwo
 fileList* logOrList(fileList *listOne, fileList *listTwo){
-
-	return NULL;
+	fileList *newList = makeList(listOne);
+	//not in list
+	if(inList(listTwo->file, newList) == 0){
+		addToList(listTwo->file, newList); 
+	}
+	
+		while(listTwo->next != NULL){
+			listTwo = listTwo->next;
+			if(inList(listTwo->file, newList) == 0){
+				addToList(listTwo->file, newList); 
+			}
+			
+		}
+	return newList;
 }
-
+void addToList(char *toBeAdded, fileList *addedTo){
+	char *newStr;
+	int len;
+	len = strlen(toBeAdded);
+	newStr = (char*)malloc(len + 1);
+	strcpy(newStr, toBeAdded);
+	newStr[len] = '\0';
+	fileList *new = (fileList*)malloc(sizeof(fileList));
+	memset(new, 0, sizeof(fileList));
+	new->file = newStr;
+	while(addedTo->next != NULL){
+		addedTo = addedTo->next;
+	}
+	addedTo->next = new;
+}
+//check if file is in list return 1 for yes 0 for no
+int inList(char *check, fileList *listH){
+	if(strcmp(listH->file, check) == 0){
+		return 1;
+	}
+	else{
+		while(listH->next != NULL){
+			listH = listH->next;
+			if(strcmp(listH->file, check) == 0){
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
 //get string in inverted index file
 char* getFileString(char *fileName){
 	FILE* qp;

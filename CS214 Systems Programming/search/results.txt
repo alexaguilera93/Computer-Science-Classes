@@ -34,8 +34,14 @@ testDir/test1.txt 2 testDir/test2/test4 1 testDir/test2/1 1
 <list> aff
 testDir/test1.txt 1 
 </list> 
+<list> aguilera
+testDir/alex.txt 1 
+</list> 
 <list> akaa
 testDir/test1.txt 1 
+</list> 
+<list> alex
+testDir/alex.txt 1 
 </list> 
 <list> b
 testDir/test2/test55/test7.txt 2 testDir/test2/test4 2 testDir/test2/1 2 
@@ -57,6 +63,9 @@ testDir/test2.txt 1
 </list> 
 <list> cda
 testDir/test2.txt 1 
+</list> 
+<list> cool
+testDir/alex2.txt 1 
 </list> 
 <list> cvx
 testDir/test2.txt 1 
@@ -139,6 +148,9 @@ testDir/test2/test4 1 testDir/test2/1 1
 <list> jkl
 testDir/test1.txt 1 testDir/test2/test4 1 testDir/test2/1 1 
 </list> 
+<list> linux
+testDir/alex.txt 1 
+</list> 
 <list> m
 testDir/test2/test55/test7.txt 1 
 </list> 
@@ -186,6 +198,9 @@ testDir/test2/test55/test7.txt 1
 </list> 
 <list> trnbgfdsbvdfb
 testDir/test2/test55/test7.txt 1 
+</list> 
+<list> ubuntu
+testDir/alex2.txt 1 
 </list> 
 <list> v
 testDir/test2/test55/test7.txt 1 

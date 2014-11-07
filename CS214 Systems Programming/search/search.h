@@ -26,6 +26,12 @@ int isalpha(int c);
 
 int tolower(int c);
 
+int inList(char *check, fileList *listH);
+
+void printList(fileList *print);
+
+fileList *makeList(fileList *copy);
+
 void destroyNodes();
 
 void destroyFiles(fileList *fileHead);
@@ -38,4 +44,5 @@ fileList* logAndList(fileList *listOne, fileList *listTwo);
 
 fileList* logOrList(fileList *listOne, fileList *listTwo);
 
+void addToList(char *toBeAdded, fileList *addedTo);
 #endif
