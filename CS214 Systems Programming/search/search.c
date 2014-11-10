@@ -83,6 +83,7 @@ int main(int argc, char** argv){
 		char in[BUFFER_SIZE];
 		int l;
 		l = 0;
+		printf("Usage: for AND sa <term> <term> .... for OR so <term> <term> ..... to quit type q:\n");
 		if(fgets(in, BUFSIZ, stdin) != NULL){
 			if(strlen(in) == 1){
 				printf("Invalid Input\n");
