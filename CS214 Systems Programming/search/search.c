@@ -12,6 +12,8 @@
 
 #define BUFFER_SIZE BUFSIZ
 Node *head;
+andLoop myCheck = KEEPGOING;
+
 //main method for search
 int main(int argc, char** argv){
 	if(argc != 2){
@@ -42,6 +44,10 @@ int main(int argc, char** argv){
 	if(S_ISREG(info.st_mode)){
 		char *string1;
 		string1 = getFileString(argv[1]);
+		if(string1 == NULL){
+		printf("Empty/corrupt file\n");
+		return 1;
+		}
 		TokenizerT* tokenizer = TKCreate("  \n", string1);
 		char *token;
 		char *word;
@@ -123,81 +129,130 @@ int sendString(char *inputString){
 	else{
 		TokenizerT* tokenizer = TKCreate("  \n", inputString);
 		char *token = TKGetNextToken(tokenizer);
-		/*
-		if(strcmp("so", token) != 0 && strcmp("sa", token) != 0){
-			printf("Invalid Input\n");
-			free(token);
-			while((token = TKGetNextToken(tokenizer)) != NULL){
-				free(token);
-			}
-			TKDestroy(tokenizer);
-			return 0;
-		}
-		else{
-			printf("User input was: %s\n", token);
-			free(token);
-			while((token = TKGetNextToken(tokenizer)) != NULL){
-				free(token);
-			}
-			free(token);
-			TKDestroy(tokenizer);
-			return 0;
-		}*/
 		//do or of lists
 		if(strcmp("so", token) == 0){
-		free(token);
-		fileList *hold = NULL;
+			free(token);
+			fileList *hold = NULL;
+			while((token = TKGetNextToken(tokenizer)) != NULL){
+				Node *trace1 = head;
+				//head node word is the token
+				if(strcmp(trace1->word, token) == 0){
+					if(hold == NULL){
+						hold = makeList(trace1->listHead);
+						free(token);
+						continue;
+					}
+					else{
+						fileList *newHold = logOrList(hold, trace1->listHead);
+						destroyFiles(hold);
+						free(token);
+						hold = newHold;
+						continue;
+					}
+				}
+				else{
+					while(trace1->next != NULL){
+						trace1 = trace1->next;
+						if(strcmp(trace1->word, token) == 0){
+							if(hold == NULL){
+								hold = makeList(trace1->listHead);
+								//free(token);
+								break;
+							}
+							else{
+								fileList *newHold1 = logOrList(hold, trace1->listHead);
+								destroyFiles(hold);
+								hold = newHold1;
+								//free(token);
+								break;
+							}
+						}
+					}
+					free(token);
+				}
+
+			}
+			free(token);
+			TKDestroy(tokenizer);
+			printList(hold);
+			destroyFiles(hold);
+			return 0;
+		}
+
+		else if(strcmp("sa", token) == 0){
+				free(token);
+                fileList *hold = NULL;
 		while((token = TKGetNextToken(tokenizer)) != NULL){
-			Node *trace1 = head;
-			//head node word is the token
-			if(strcmp(trace1->word, token) == 0){
+			Node *trace2 = head;
+			if(strcmp(trace2->word, token) == 0){
 				if(hold == NULL){
-					hold = makeList(trace1->listHead);
+					hold = makeList(trace2->listHead);
 					free(token);
 					continue;
 				}
 				else{
-					fileList *newHold = logOrList(hold, trace1->listHead);
+					fileList *newHold = logAndList(hold, trace2->listHead);
 					destroyFiles(hold);
 					free(token);
 					hold = newHold;
-					continue;
+
 				}
 			}
 			else{
-				while(trace1->next != NULL){
-					trace1 = trace1->next;
-					if(strcmp(trace1->word, token) == 0){
-						if(hold == NULL){
-						hold = makeList(trace1->listHead);
-						//free(token);
+				//0 false 1 true
+			//int reachEnd = 0;
+			while(trace2->next != NULL){
+				trace2 = trace2->next;
+				if(strcmp(trace2->word, token) == 0){
+					if(hold == NULL){
+						hold = makeList(trace2->listHead);
 						break;
 					}
 					else{
-						fileList *newHold1 = logOrList(hold, trace1->listHead);
-						destroyFiles(hold);
-						hold = newHold1;
-						//free(token);
-						break;
-					}
-					}
+					fileList *newHold1 = logAndList(hold, trace2->listHead);
+					destroyFiles(hold);
+					hold = newHold1;
+					if(myCheck == STOP){
+						printf("Query returned no results\n");
+						while((token = TKGetNextToken(tokenizer)) != NULL){
+							free(token);
+						}
+						TKDestroy(tokenizer);
+						myCheck = KEEPGOING;
+						return 0;
 				}
-				free(token);
+					}
+					break;
+				}
 			}
-	
+			if(trace2->next == NULL){
+				//printf("Query returned no results \n");
+				destroyFiles(hold);
+				myCheck = STOP;
+				hold = NULL;
+			}
+
+			}
+			free(token);
+			token = NULL;
+		if(myCheck == STOP){
+				myCheck = KEEPGOING;
+				break;
+			}	
 		}
+		if(token != NULL){
+			free(token);
+		}
+		while((token = TKGetNextToken(tokenizer)) != NULL){
 		free(token);
+		}
+
 		TKDestroy(tokenizer);
 		printList(hold);
 		destroyFiles(hold);
-		return 0;
-	}
-		
-		else if(strcmp("sa", token) == 0){
-
 		}
 		else{
-		printf("Invalid Input\n");
+			printf("Invalid Input\n");
 		}
 		return 0;
 	}
@@ -209,7 +264,7 @@ void printList(fileList *print){
 		printf("Query returned no results\n");
 	}
 	else{
-	printf("%s ", print->file);
+		printf("%s ", print->file);
 		while(print->next != NULL){
 			print = print->next;
 			printf("%s ", print->file);
@@ -247,16 +302,6 @@ fileList *makeList(fileList *copy){
 	return newFileHead;
 
 }
-//command line arguemnt is directory
-/*
-   if(S_ISDIR(info.st_mode)){	
-//printf("%s is a directory \n", argv[2]);
-openDirRec(argv[2]);
-printNodes(argv[1]);
-destroyNodes();
-//what to do if command line argument is directory
-}
- */
 
 //destroys linked list
 void destroyNodes(){
@@ -282,7 +327,7 @@ void destroyNodes(){
 //takes head of a list of file and frees all char* and fileLists
 void destroyFiles(fileList *fileHead){
 	if(fileHead == NULL){
-	return;
+		return;
 	}
 	fileList *backTrace;
 	backTrace = fileHead;
@@ -375,8 +420,26 @@ void addWord(char *word){
 }
 //perform a logical AND on 2 lists, returns head of new list that is logical AND of nodes in listOne and listTwo
 fileList* logAndList(fileList *listOne, fileList *listTwo){
+	fileList *newList = NULL;
+	fileList *trace;
+	if(listOne == NULL || listTwo == NULL){
+		return NULL;
+	}
+	trace = listOne;
 
-	return NULL;
+	if(inList(trace->file, listTwo) == 1){
+		newList = andAddToList(trace->file, newList);
+	}
+	while(trace->next != NULL){
+		trace = trace->next;
+		if(inList(trace->file, listTwo) == 1){
+			newList = andAddToList(trace->file, newList);
+		}
+	}
+	if(newList == NULL){
+		myCheck = STOP;
+	}
+	return newList;
 }
 
 //perform a logical OR on 2 lists, returns head of new list that is logical OR of nodes in listOne and listTwo
@@ -386,15 +449,41 @@ fileList* logOrList(fileList *listOne, fileList *listTwo){
 	if(inList(listTwo->file, newList) == 0){
 		addToList(listTwo->file, newList); 
 	}
-	
-		while(listTwo->next != NULL){
-			listTwo = listTwo->next;
-			if(inList(listTwo->file, newList) == 0){
-				addToList(listTwo->file, newList); 
-			}
-			
+
+	while(listTwo->next != NULL){
+		listTwo = listTwo->next;
+		if(inList(listTwo->file, newList) == 0){
+			addToList(listTwo->file, newList); 
 		}
+
+	}
 	return newList;
+}
+
+fileList *andAddToList(char *toBeAdded, fileList *addedTo){
+	fileList *head = addedTo;
+	char *newStr;
+	int len;
+	len = strlen(toBeAdded);
+	newStr = (char*)malloc(len + 1);
+	strcpy(newStr, toBeAdded);
+	newStr[len] = '\0';
+	fileList *new = (fileList*)malloc(sizeof(fileList));
+	memset(new, 0, sizeof(fileList));
+	new->file = newStr;
+	if(addedTo == NULL){
+		addedTo = new;
+		addedTo->next = NULL;
+		return addedTo;
+	}
+	else{
+	while(addedTo->next != NULL){
+		addedTo = addedTo->next;
+	}
+	addedTo->next = new;
+	return head;
+	}
+
 }
 void addToList(char *toBeAdded, fileList *addedTo){
 	char *newStr;
@@ -406,10 +495,17 @@ void addToList(char *toBeAdded, fileList *addedTo){
 	fileList *new = (fileList*)malloc(sizeof(fileList));
 	memset(new, 0, sizeof(fileList));
 	new->file = newStr;
+	if(addedTo == NULL){
+		addedTo = new;
+		addedTo->next = NULL;
+		return;
+	}
+	else{
 	while(addedTo->next != NULL){
 		addedTo = addedTo->next;
 	}
 	addedTo->next = new;
+	}
 }
 //check if file is in list return 1 for yes 0 for no
 int inList(char *check, fileList *listH){

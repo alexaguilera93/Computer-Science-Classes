@@ -14,13 +14,13 @@ testDir/test2/test4 1 testDir/test2/1 1
 testDir/test2/test55/test7.txt 1 
 </list> 
 <list> a
-testDir/test2/1 10 testDir/test1.txt 4 testDir/test2.txt 4 testDir/test2/test55/test7.txt 1 testDir/test2/test4 1 
+testDir/test2/1 10 testDir/test1.txt 4 testDir/test2.txt 4 testDir/test2/test4 2 testDir/test2/test55/test7.txt 1 
 </list> 
 <list> aaa
-testDir/test1.txt 1 
+testDir/test1.txt 1 testDir/test2/test4 1 testDir/test2.txt 1 
 </list> 
 <list> abc
-testDir/test2/1 11 testDir/test2/test4 4 testDir/test1.txt 1 
+testDir/test2/1 11 testDir/test2/test4 5 testDir/test1.txt 1 
 </list> 
 <list> ad
 testDir/test2.txt 1 

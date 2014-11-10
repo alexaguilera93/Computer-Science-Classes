@@ -18,7 +18,11 @@ struct fileList_ {
 };
 typedef struct fileList_ fileList;
 
+typedef enum {KEEPGOING, STOP} andLoop;
+
 void addWord(char *word);
+
+fileList *andAddToList(char *toBeAdded, fileList *addedTo);
 
 void addFile(char *word, char *file);
 
