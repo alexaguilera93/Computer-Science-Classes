@@ -1,13 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <malloc.h>
-#include <errno.h>
-#include <string.h>
-#include "tokenizer.h"
-
-#define FALSE	0;
-#define	TRUE	1;
-#define	SBUFSIZE 16;
+#ifndef BOOK_H
+#define BOOK_H
 
 struct SharedData {
 	int	isopen;
@@ -18,5 +10,16 @@ struct SharedData {
 	pthread_mutex_t	mutex;
 	pthread_cond_t	dataAvailable;
 	pthread_cond_t	spaceAvailable;
+	char **		catagories;
 
 };
+
+char** process_catagories(char *catagoriesName);
+
+void initialize(struct SharedData *sptr, int refcount, char **catStrings);
+
+void consumer_func(void *arg);
+
+void producer_func(void *arg);
+
+#endif

@@ -5,6 +5,7 @@
 #include <malloc.h>
 #include <semaphore.h>
 #include "book.h"
+#include "tokenizer.h"
 /* Usage: ./bookOrder <databaseinputfile> <bookOrderinputfile> <catagorieFile>*/
 
 int main(int argc, char **argv){
