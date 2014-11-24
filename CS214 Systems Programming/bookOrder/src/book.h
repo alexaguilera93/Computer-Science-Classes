@@ -1,20 +1,16 @@
 #ifndef BOOK_H
 #define BOOK_H
 
-struct SharedData {
-	int	isopen;
-	unsigned int	front;
-	unsigned int	count;
-	unsigned int	bufsize;
-	char		buff[SBUFSIZE];
-	char *		catFileName;
-	char *		dbFile;
-	char *		ordersFile;
-	sem_t		empty_count;
-	sem_t		full_count;
-	sem_t		use_queue;
-
+struct database_ {
+	char *name;
+	int customerId;
+	float balance;
+	char *address;
+	char *state;
+	char *zipcode;
+	UT_hash_handle hh;
 };
+typedef struct  database_ database;
 
 //char** process_catagories(char *catagoriesName);
 
