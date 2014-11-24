@@ -7,14 +7,16 @@ struct SharedData {
 	unsigned int	count;
 	unsigned int	bufsize;
 	char		buff[SBUFSIZE];
-	pthread_mutex_t	mutex;
-	pthread_cond_t	dataAvailable;
-	pthread_cond_t	spaceAvailable;
-	char **		catagories;
+	char *		catFileName;
+	char *		dbFile;
+	char *		ordersFile;
+	sem_t		empty_count;
+	sem_t		full_count;
+	sem_t		use_queue;
 
 };
 
-char** process_catagories(char *catagoriesName);
+//char** process_catagories(char *catagoriesName);
 
 void initialize(struct SharedData *sptr, int refcount, char **catStrings);
 
