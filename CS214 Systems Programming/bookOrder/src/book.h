@@ -1,23 +1,31 @@
 #ifndef BOOK_H
 #define BOOK_H
-
-struct database_ {
+#include "uthash.h"
+struct database {
 	char *name;
-	int customerId;
+	int customer_id;
 	float balance;
 	char *address;
 	char *state;
-	char *zipcode;
+	int zipcode;
 	UT_hash_handle hh;
 };
-typedef struct  database_ database;
 
-//char** process_catagories(char *catagoriesName);
+struct BookOrder{
+	char *title;
+	int customer_id
+	char *category;
+	float price;
+};
 
-void initialize(struct SharedData *sptr, int refcount, char **catStrings);
+char** process_catagories(char *fileName);
+
+int process_databae(char *fileName);
 
 void consumer_func(void *arg);
 
 void producer_func(void *arg);
+
+void add_db(struct database *s);
 
 #endif
