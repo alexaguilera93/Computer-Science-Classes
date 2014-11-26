@@ -17,6 +17,7 @@
 
 #define BUFFER_SIZE BUFSIZ
 
+
 #define FALSE 0
 #define TRUE 1
 
@@ -147,23 +148,101 @@ int process_database(char *fileName){
 	}
 	return 0;
 }
+
+/* functions for database hashtable */
+
 struct database *entries = NULL; //hash table for database
-//add a database entrie;
+
+/*add a database entrie */
+
 void add_db(struct database *s){
 	HASH_ADD_INT(entries,customer_id,s);
 }
+
+/* find database entrie from customer_id */
+
+struct database *find_entry(int customer_id){
+	struct database *find;
+	HASH_FIND_INT(customers, &customer_id, find);
+	return find;
+}
+
+/* free database of all memory */
+
+void free_db(void){
+	struct database db*;
+	struct database *temp;
+	HASH_ITER(hh, entries, db, temp){
+		HASH_DEL(entries, db);
+		destroy_queue(db->successful_orders);
+		destroy_queue(db->rejected_orders);
+		free(db->name);
+		free(db->address);
+		free(db->state);
+		free(db->successful_orders);
+		free(db->rejected_orders);
+		free(db);
+	}
+}
+
+/* functions for consumer queue hashtable */
+
+struct consumer_queue *consumer_queue = NULL;//hash table
+
+/* function that returns queue that maches category */
+Queue *get_consumer_queue(char *category){
+	struct consumer_queue *find;
+	HASH_FIND_STR(consumer_queue, category, find);
+	if(find == NULL){
+		return NULL;
+	}
+	return find->queue;
+}
+
+/*Add a new queue to hashtable */
+
+void add_consumer_queue(char *category){
+	int len = strlen(category);
+	char *temp = (char*)malloc(len + 1);
+	strcpy(temp, category);
+	struct consumer_queue *new_item =(struct consumer_queue*)malloc(sizeof(struct consumer_queue));
+	new_item->category = temp;
+	new_item->queue = create_queue();
+	if(find_consumer_queue(category) == NULL){
+		HASH_ADD_KEYPTR(hh, consumer_queue, new_item->category, strlen(new_item->category), new_item);
+	}	
+}
+
+/* Consumer Function:
+ * 
+ * This function will take in a string that has an order and will process 
+ * that order through the database and make the appropriate changes to 
+ * the database, all while making sure that as it modifies the 
+ * database item that no other thread can modify it while it is
+ * doing its instructions
+ *
+ */
 
 void *consumer_func(void *arg){
 
 }
 
+
+/* Producer Function:
+ *
+ * This function will read in the orders from the orders file and start
+ * feeding them to the queues for the consumer threads to read and 
+ * modify the database structure accodringly
+ *
+ */
+
 void *producer_func(void *arg){
 	char *orderFile = (char *)arg;
 	FILE *fp = fopen(orderFile, "r");
 	while(!feof(fp)){
-		char order[200];
-		if(fgets(order, 200, fp) != NULL){
-			printf("%s\n", order);
+		char order[LINE_MAX];
+		if(fgets(order, LINE_MAX, fp) != NULL){
+			//printf("%s\n", order);
 		}
 	}
 	pthread_exit("Thread exiting\n");

@@ -3,19 +3,16 @@
 
 #define BUFSIZE BUFSIZ
 #include "uthash.h"
+
 struct database {
 	char *name;
 	int customer_id;
 	float balance;
 	char *address;
 	char *state;
-	int zipcode;/*
-	sem_t empty_count;
-	sem_t full_count;
-	sem_t use_queue;
-	struct successful_order s_orders;
-	struct rejected_orders r_orders;
-	*/
+	int zipcode;
+	Queue *suc_orders;
+	Queue *rejected_orders;
 	UT_hash_handle hh;
 };
 
@@ -28,23 +25,35 @@ struct order{
 
 struct successful_order{
 	int num;
-	char **titles;
-	float *prices;
+	char *title;
+	float price;
 	float remaining_balance;
 
 };
 
 struct rejected_orders{
 	int num;
-	char **titles;
-	float *price;
+	char *title;
+	float price;
 	float remaining_balance;
 };
 
 struct consumer_queue{
 	char *category;
-	int isopen;
+	Queue *queue;
+	UT_hash_handle hh;
 };
+
+struct category_thread{
+	pthread_t thread;
+	struct category_thread *next;
+};
+
+struct database *find_customer(int customer_id);
+
+Queue *get_consumer_queue(char *category);
+
+void add_consumer_queue(char *category);
 
 char** process_categories(char *fileName);
 
