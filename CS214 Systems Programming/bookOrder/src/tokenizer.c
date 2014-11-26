@@ -231,7 +231,7 @@ char is_delimiter(char character, char* delimiters) {
 	 * Modifies: Nothing
 	 * Returns: 1 if character is a delimiter, 0 if it is not
 	 */
-	if(isalpha(character) || isdigit(character) || character == ',' || character == ' ' || character == '.'){
+	if(isalpha(character) || isdigit(character) || character == ',' || character == ' ' || character == '.'|| character == ':' || character == '(' || character ==')' || character == '{' || character == '}'){
 	return 0;
 	}
 	else{
