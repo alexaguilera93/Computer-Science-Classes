@@ -13,7 +13,7 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <limits.h>
-
+#include "queue.h"
 
 #define BUFFER_SIZE BUFSIZ
 
