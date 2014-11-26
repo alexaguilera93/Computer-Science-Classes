@@ -1,6 +1,7 @@
 #ifndef BOOK_H
 #define BOOK_H
 
+#include "queue.h"
 #define BUFSIZE BUFSIZ
 #include "uthash.h"
 
@@ -11,8 +12,8 @@ struct database {
 	char *address;
 	char *state;
 	int zipcode;
-	Queue *suc_orders;
-	Queue *rejected_orders;
+	struct Queue *successful_orders;
+	struct Queue *rejected_orders;
 	UT_hash_handle hh;
 };
 

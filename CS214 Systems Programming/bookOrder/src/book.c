@@ -163,14 +163,14 @@ void add_db(struct database *s){
 
 struct database *find_entry(int customer_id){
 	struct database *find;
-	HASH_FIND_INT(customers, &customer_id, find);
+	HASH_FIND_INT(entries, &customer_id, find);
 	return find;
 }
 
 /* free database of all memory */
 
 void free_db(void){
-	struct database db*;
+	struct database *db;
 	struct database *temp;
 	HASH_ITER(hh, entries, db, temp){
 		HASH_DEL(entries, db);
@@ -208,7 +208,7 @@ void add_consumer_queue(char *category){
 	struct consumer_queue *new_item =(struct consumer_queue*)malloc(sizeof(struct consumer_queue));
 	new_item->category = temp;
 	new_item->queue = create_queue();
-	if(find_consumer_queue(category) == NULL){
+	if(get_consumer_queue(category) == NULL){
 		HASH_ADD_KEYPTR(hh, consumer_queue, new_item->category, strlen(new_item->category), new_item);
 	}	
 }
@@ -245,6 +245,7 @@ void *producer_func(void *arg){
 			//printf("%s\n", order);
 		}
 	}
+	fclose(fp);
 	pthread_exit("Thread exiting\n");
 
 }
