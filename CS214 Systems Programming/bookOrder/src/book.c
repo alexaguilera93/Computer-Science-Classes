@@ -399,7 +399,7 @@ int main(int argc, char **argv){
 
 	struct database *trace, *temp1;
 	FILE *rt;
-	rt = fopen("finalresults.txt", "w");
+	rt = fopen("finalreport.txt", "w");
 	HASH_ITER(hh, entries, trace, temp1){
 		fprintf(rt, "=== BEGIN CUSTOMER INFO ===\n###BALANCE###\nCustomer name:%s\nCustomer ID number: %d\nRemaining credit balance after all purchases (a dollar amount) %.2f\n###SUCCESSFUL ORDERS###\n", trace->name, trace->customer_id, trace->balance);
 		struct successful_order *tr1;
