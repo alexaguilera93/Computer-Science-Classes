@@ -6,17 +6,17 @@ Remaining credit balance after all purchases (a dollar amount) 336.24
 ###SUCCESSFUL ORDERS###
 I Could Pee on This: And Other Poems by Cats|7.49|492.62
 The Handbuilt Home: 34 Simple Stylish and Budget-Friendly Woodworking Projects for Every Room|15.63|476.99
-SuperFreakonomics|3.79|473.20
-Across Islands and Oceans|1.99|471.21
-Fifty Places to Dive Before You Die: Diving Experts Share the World's Greatest Destinations|16.47|454.74
-The Greatest Hockey Stories Ever Told: The Finest Writers on Ice|9.71|445.03
-The California Surf Project|22.16|422.87
-A Letter to My Dog: Notes to Our Best Friends|16.47|406.40
-Underwater Dogs|11.60|394.80
-My Year in Meals|16.91|377.89
-How Children Succeed: Grit, Curiosity, and the Hidden Power of Character|9.45|368.44
-Star Wars: The Ultimate Action Figure Collection|21.38|347.06
-Damaged: The Heartbreaking True Story of a Forgotten Child|0.99|346.07
+Across Islands and Oceans|1.99|475.00
+Fifty Places to Dive Before You Die: Diving Experts Share the World's Greatest Destinations|16.47|458.53
+The Greatest Hockey Stories Ever Told: The Finest Writers on Ice|9.71|448.82
+The California Surf Project|22.16|426.66
+SuperFreakonomics|3.79|422.87
+How Children Succeed: Grit, Curiosity, and the Hidden Power of Character|9.45|413.42
+Damaged: The Heartbreaking True Story of a Forgotten Child|0.99|412.43
+A Letter to My Dog: Notes to Our Best Friends|16.47|395.96
+Underwater Dogs|11.60|384.36
+My Year in Meals|16.91|367.45
+Star Wars: The Ultimate Action Figure Collection|21.38|346.07
 Outliers: The Story of Success|9.83|336.24
 ### REJECTED ORDERS ###
 === END CUSTOMER INFO ===
@@ -25,13 +25,13 @@ Outliers: The Story of Success|9.83|336.24
 ###BALANCE###
 Customer name:Ying Zhan
 Customer ID number: 2
-Remaining credit balance after all purchases (a dollar amount) 9.11
+Remaining credit balance after all purchases (a dollar amount) 1.50
 ###SUCCESSFUL ORDERS###
 The History of Surfing|31.50|33.50
-Soul Surfer: A True Story of Faith, Family, and Fighting to Get Back on the Board|7.99|25.51
-How to Create a Mind: The Secret of Human Thought Revealed|16.40|9.11
+How to Create a Mind: The Secret of Human Thought Revealed|16.40|17.10
+The Joy of Hate: How to Triumph over Whiners in the Age of Phony Outrage|15.60|1.50
 ### REJECTED ORDERS ###
-The Joy of Hate: How to Triumph over Whiners in the Age of Phony Outrage|15.60
+Soul Surfer: A True Story of Faith, Family, and Fighting to Get Back on the Board|7.99
 Swimming Studies|19.80
 === END CUSTOMER INFO ===
 
@@ -51,13 +51,13 @@ Customer name:Yuanzhen Gu
 Customer ID number: 4
 Remaining credit balance after all purchases (a dollar amount) 9.11
 ###SUCCESSFUL ORDERS###
-Following Atticus (P.S.)|2.99|77.01
-The Immortal Life of Henrietta Lacks|8.91|68.10
-Stop Living In This Land. Go To The Everlasting World Of Happiness. Live There Forever.|7.19|60.91
-365 Cats 2013 Page-A-Day Calendar|9.66|51.25
-Thomas Jefferson: The Art of Power|18.98|32.27
-Origami Fun Kit for Beginners (Dover Fun Kit)|10.17|22.10
-The Outpost: An Untold Story of American Valor|12.99|9.11
+The Immortal Life of Henrietta Lacks|8.91|71.09
+Stop Living In This Land. Go To The Everlasting World Of Happiness. Live There Forever.|7.19|63.90
+Thomas Jefferson: The Art of Power|18.98|44.92
+The Outpost: An Untold Story of American Valor|12.99|31.93
+Following Atticus (P.S.)|2.99|28.94
+365 Cats 2013 Page-A-Day Calendar|9.66|19.28
+Origami Fun Kit for Beginners (Dover Fun Kit)|10.17|9.11
 ### REJECTED ORDERS ###
 === END CUSTOMER INFO ===
 
