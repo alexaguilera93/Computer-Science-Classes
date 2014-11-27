@@ -29,6 +29,32 @@ int main(int argc, char **argv){
 	if(b == NULL){
 		exit(EXIT_FAILURE);
 	}
+	/* start making consumer threads and storing them in memory */
+	struct category_thread *consumer_threads = NULL; 
+	int m = 0;
+	while(b[m] != NULL){
+		int len1 = strlen(b[m]);
+		char *cat = (char*)malloc(len1 + 1);
+		memset(cat, 0, len1 + 1);
+		strcpy(cat, b[m]);
+		cat[len1] = '\0';
+		add_consumer_queue(b[m]);
+		pthread_t cat_thread;
+		pthread_create(&cat_thread, NULL, consumer_func, cat);
+		struct category_thread *c_thread = (struct category_thread*)malloc(sizeof(struct category_thread));
+		c_thread->thread = cat_thread;
+		if(consumer_threads == NULL){
+			c_thread->next = NULL;
+			consumer_threads = c_thread;
+		}
+		else{
+			c_thread->next = consumer_threads;
+			consumer_threads = c_thread;
+		}
+		m++;
+	}
+
+	/* producer thread  */
 	int res;
 	pthread_t a_thread;
 	void *thread_result;

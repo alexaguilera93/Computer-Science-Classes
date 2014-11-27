@@ -21,7 +21,8 @@
 #define FALSE 0
 #define TRUE 1
 
-
+pthread_mutex_t lock_file = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t lock_database = PTHREAD_MUTEX_INITIALIZER;
 
 
 
@@ -224,7 +225,46 @@ void add_consumer_queue(char *category){
  */
 
 void *consumer_func(void *arg){
-
+	char *category = (char*)arg;
+	Queue *p = get_consumer_queue(category);
+	free(category);
+	if(!p){
+		return NULL;
+	}
+	while(p->isopen || p->length > 0){
+		if(p->length == 0){
+			continue;
+		}
+		pthread_mutex_lock(&lock_database);
+		struct order *process = (struct order*)dequeue(p);
+		struct database *customer = find_entry(process->customer_id);
+		customer->balance = customer->balance - process->price;
+		if(customer->balance < 0){
+			struct rejected_orders *reject = (struct rejected_orders*)malloc(sizeof(struct rejected_orders));
+			memset(reject, 0, sizeof(struct rejected_orders));
+			reject->title = (char*)malloc(strlen(process->title) + 1);
+			memset(reject->title, 0, strlen(process->title) + 1);
+			strcpy(reject->title, process->title);
+			reject->title[strlen(process->title)] = '\0';
+			reject->price = process->price;
+			enqueue(customer->rejected_orders, reject);
+		}
+		else{
+			struct successful_order *success = (struct successful_order*)malloc(sizeof(struct successful_order));
+			success->title = (char*)malloc(strlen(process->title) + 1);
+			memset(success->title, 0, strlen(process->title + 1));
+			strcpy(success->title, process->title);
+			success->title[strlen(process->title)] = '\0';
+			success->price = process->price;
+			success->remaining_balance = customer->balance;
+			enqueue(customer->successful_orders, success);
+		}
+		free(process->title);
+		free(process->category);
+		free(process);
+		pthread_mutex_unlock(&lock_database);
+	}
+	pthread_exit("Thread Finished\n");
 }
 
 
@@ -239,13 +279,44 @@ void *consumer_func(void *arg){
 void *producer_func(void *arg){
 	char *orderFile = (char *)arg;
 	FILE *fp = fopen(orderFile, "r");
-	while(!feof(fp)){
 		char order[LINE_MAX];
-		if(fgets(order, LINE_MAX, fp) != NULL){
-			//printf("%s\n", order);
-		}
+		while(fgets(order, LINE_MAX, fp) != NULL){
+			TokenizerT *tokenizer = TKCreate("|\n", order);
+			struct order *send_order = (struct order*)malloc(sizeof(struct order));
+			memset(send_order, 0, sizeof(struct order));
+			char *token;
+			token = TKGetNextToken(tokenizer);
+			send_order->title = token;
+			char *price = TKGetNextToken(tokenizer);
+			send_order->price = atof(price);
+			free(price);
+			char *cust_id = TKGetNextToken(tokenizer);
+			send_order->customer_id = atoi(cust_id);
+			free(cust_id);
+			char *category1 = TKGetNextToken(tokenizer);
+			send_order->category = category1;
+			Queue *p = get_consumer_queue(send_order->category);
+
+			if(!p){
+				free(send_order->title);
+				free(send_order->category);
+				free(send_order);
+				TKDestroy(tokenizer);
+				continue;
+			}
+			else{
+				enqueue(p, (void *)send_order);
+				TKDestroy(tokenizer);
+			}
+
+	}
+	struct consumer_queue *f;
+	for(f = consumer_queue; f != NULL; f = f->hh.next){
+		f->queue->isopen = FALSE;
 	}
 	fclose(fp);
 	pthread_exit("Thread exiting\n");
 
 }
+
+
