@@ -8,7 +8,6 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include "uthash.h"
-#include <sys/queue.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -72,6 +71,7 @@ char **process_categories(char *fileName){
 			return_string[j] = new_string;
 			j++;
 		}
+		free(fileString);
 		return_string[j] = NULL;
 		return return_string;
 	}
@@ -200,7 +200,6 @@ Queue *get_consumer_queue(char *category){
 	if(find == NULL){
 		return NULL;
 	}
-	printf("got category queue %s\n", category);
 	return find->queue;
 }
 
@@ -217,6 +216,19 @@ void add_consumer_queue(char *category){
 		HASH_ADD_KEYPTR(hh, consumer_queue, new_item->category, strlen(new_item->category), new_item);
 	}	
 }
+/*free all consumer queues*/
+void free_consumer_queues(void){
+	struct consumer_queue *a, *b;
+	HASH_ITER(hh, consumer_queue, a, b){
+		HASH_DEL(consumer_queue, a);
+		destroy_queue(a->queue);
+		free(a->category);
+		free(a->queue);
+		free(a);
+	}
+
+
+}
 
 /* Consumer Function:
  * 
@@ -232,47 +244,52 @@ void *consumer_func(void *arg){
 	char *category = (char*)arg;
 	Queue *p = get_consumer_queue(category);
 	free(category);
+
 	if(!p){
 		return NULL;
 	}
+
 	while(p->isopen || p->length > 0){
+		//printf("loop 2\n");
 		if(p->length == 0){
 			continue;
 		}
 		pthread_mutex_lock(&lock_database);
 		struct order *process = (struct order*)dequeue(p);
 		struct database *customer = find_entry(process->customer_id);
-		customer->balance = customer->balance - process->price;
+		float check = customer->balance - process->price;
 		pthread_mutex_lock(&lock_file);
-		if(customer->balance < 0){
-			struct rejected_orders *reject = (struct rejected_orders*)malloc(sizeof(struct rejected_orders));
-			memset(reject, 0, sizeof(struct rejected_orders));
-			reject->title = (char*)malloc(strlen(process->title) + 1);
-			memset(reject->title, 0, strlen(process->title) + 1);
-			strcpy(reject->title, process->title);
-			reject->title[strlen(process->title)] = '\0';
-			reject->price = process->price;
-			enqueue(customer->rejected_orders, reject);
+		if(check < 0){
+
+			struct rejected_orders *rej = (struct rejected_orders*)malloc(sizeof(struct rejected_orders));
+			memset(rej, 0, sizeof(struct rejected_orders));
+			int len3 = strlen(process->title);
+			rej->title = (char*)malloc(len3 + 1);
+			strcpy(rej->title, process->title);
+			rej->title[len3] = '\0';
+			rej->price = process->price;
+			enqueue(customer->rejected_orders, rej);
 		}
 		else{
-			struct successful_order *success = (struct successful_order*)malloc(sizeof(struct successful_order));
-			success->title = (char*)malloc(strlen(process->title) + 1);
-			memset(success->title, 0, strlen(process->title + 1));
-			strcpy(success->title, process->title);
-			success->title[strlen(process->title)] = '\0';
-			success->price = process->price;
-			success->remaining_balance = customer->balance;
-			//printf("enqueue failed for %s\n");
-			enqueue(customer->successful_orders, success);
+			customer->balance = customer->balance - process->price;
+			struct successful_order *suc = (struct successful_order*)malloc(sizeof(struct successful_order));
+			memset(suc, 0, sizeof(struct successful_order));
+			int l4 = strlen(process->title);
+			suc->title = (char*)malloc(l4 + 1);
+			memset(suc->title, 0, l4 + 1);
+			strcpy(suc->title, process->title);
+			suc->title[l4] = '\0';
+			suc->price = process->price;
+			suc->remaining_balance = customer->balance;
+			enqueue(customer->successful_orders, suc);
 		}
 		free(process->title);
 		free(process->category);
 		free(process);
-		pthread_mutex_unlock(&lock_database);
 		pthread_mutex_unlock(&lock_file);
+		pthread_mutex_unlock(&lock_database);
 	}
-	return NULL;
-	//pthread_exit("Thread Finished\n");
+	pthread_exit("Thread Finished\n");
 }
 
 
@@ -292,9 +309,9 @@ void *producer_func(void *arg){
 		TokenizerT *tokenizer = TKCreate("|\n", order);
 		char *token;
 		if((token = TKGetNextToken(tokenizer)) == NULL){
-		TKDestroy(tokenizer);
 		break;
 		}	
+		//printf("stuck in loop \n");
 		struct order *send_order = (struct order*)malloc(sizeof(struct order));
 		memset(send_order, 0, sizeof(struct order));
 		send_order->title = token;
@@ -307,7 +324,7 @@ void *producer_func(void *arg){
 		char *category1 = TKGetNextToken(tokenizer);
 		send_order->category = category1;
 		Queue *p = get_consumer_queue(send_order->category);
-		
+
 		if(!p){
 			free(send_order->title);
 			free(send_order->category);
@@ -323,6 +340,7 @@ void *producer_func(void *arg){
 	}
 	struct consumer_queue *f;
 	for(f = consumer_queue; f != NULL; f = f->hh.next){
+		//printf("getting here\n");
 		f->queue->isopen = FALSE;
 	}
 	fclose(fp);
@@ -331,76 +349,83 @@ void *producer_func(void *arg){
 }
 
 int main(int argc, char **argv){
-	/*if invalid # of arguments */
 	if(argc != 4){
-		printf("Invalid # of arguments\n");
-		return 1;
+		printf("Invalid number of arguments\n");
 	}
 	char *databaseFile = argv[1];
 	char *orderFile = argv[2];
 	char *categorieFile = argv[3];
-	//read database into memory
+	char **categories = process_categories(categorieFile);
+	if(categories == NULL){
+		exit(EXIT_FAILURE);
+	}
 	int a = process_database(databaseFile);
 	if(a == 1){
 		exit(EXIT_FAILURE);
 	}
-	char **b = process_categories(categorieFile);
-	if(b == NULL){
-		exit(EXIT_FAILURE);
-	}
-	/* start making consumer threads and storing them in memory */
-	struct category_thread *consumer_threads = NULL;
+	struct category_thread *all_cat_threads = NULL;
 	int m = 0;
-	while(b[m] != NULL){
-		int len1 = strlen(b[m]);
-		char *cat = (char*)malloc(len1 + 1);
-		memset(cat, 0, len1 + 1);
-		strcpy(cat, b[m]);
-		cat[len1] = '\0';
-		add_consumer_queue(b[m]);
+	while(categories[m] != NULL){
+		add_consumer_queue(categories[m]);
+
+		char *category = (char*)malloc(strlen(categories[m] + 1));
+		strcpy(category, categories[m]);
+		category[strlen(categories[m])] = '\0';
+
 		pthread_t cat_thread;
-		pthread_create(&cat_thread, NULL, consumer_func, cat);
-		struct category_thread *c_thread = (struct category_thread*)malloc(sizeof(struct category_thread));
+		pthread_create(&cat_thread, NULL, consumer_func, category);		   struct category_thread *c_thread = (struct category_thread*)malloc(sizeof(struct category_thread));
 		c_thread->thread = cat_thread;
-		if(consumer_threads == NULL){
+		if(all_cat_threads == NULL){
+			all_cat_threads = c_thread;
 			c_thread->next = NULL;
-			consumer_threads = c_thread;
 		}
 		else{
-			c_thread->next = consumer_threads;
-			consumer_threads = c_thread;
+			c_thread->next = all_cat_threads;
+			all_cat_threads = c_thread;
 		}
 		m++;
+
 	}
-	/* producer thread */
-	int res;
+	/*producer thread*/
 	pthread_t a_thread;
-	void *thread_result;
-	res = pthread_create(&a_thread, NULL, producer_func, (void *)orderFile);
-	if(res != 0){
-		perror("Producer Thread creation failed\n");
-		exit(EXIT_FAILURE);
+	pthread_create(&a_thread, NULL, producer_func, orderFile);
+	pthread_join(a_thread, NULL);
+
+	struct category_thread *tmp = NULL;
+
+	for(tmp = all_cat_threads; tmp != NULL; tmp=tmp->next){
+		pthread_join(tmp->thread, NULL);
 	}
-	printf("Producer Thread started, waiting to finish\n");
-	res = pthread_join(a_thread, &thread_result);
-	if(res != 0){
-		printf("producer thread failed to join\n");
-		exit(EXIT_FAILURE);
+
+	struct database *trace, *temp1;
+	FILE *rt;
+	rt = fopen("finalresults.txt", "w");
+	HASH_ITER(hh, entries, trace, temp1){
+		fprintf(rt, "=== BEGIN CUSTOMER INFO ===\n###BALANCE###\nCustomer name:%s\nCustomer ID number: %d\nRemaining credit balance after all purchases (a dollar amount) %.2f\n###SUCCESSFUL ORDERS###\n", trace->name, trace->customer_id, trace->balance);
+		struct successful_order *tr1;
+		while((tr1 = dequeue(trace->successful_orders))){
+			fprintf(rt, "%s|%.2f|%.2f\n", tr1->title, tr1->price, tr1->remaining_balance);
+			free(tr1->title);
+			free(tr1);
+		}
+		fprintf(rt, "### REJECTED ORDERS ###\n");
+		struct rejected_orders *tr2;
+		while((tr2 = dequeue(trace->rejected_orders))){
+			fprintf(rt, "%s|%.2f\n", tr2->title, tr2->price);
+			free(tr2->title);
+			free(tr2);
+		}
+		fprintf(rt, "=== END CUSTOMER INFO ===\n\n");
 	}
-	else{
-		printf("thread joined!\n");
+	struct category_thread *g = all_cat_threads;
+	while(g != NULL){
+		struct category_thread *u = g;
+		g = g->next;
+		free(u);
 	}
-	struct category_thread *cleanup = NULL;
-	for(cleanup = consumer_threads; cleanup != NULL; cleanup = cleanup->next){
-		pthread_join(cleanup->thread,NULL);
-	}
-	int i = 0;
-	while(b[i] != NULL){
-		printf("%s freed\n", b[i]);
-		free(b[i]);
-		i++;
-	}
-	free(b);
+	free_db();
+	free_consumer_queues();
+	pthread_mutex_destroy(&lock_file);
+	pthread_mutex_destroy(&lock_database);
 	return 0;
 }
-
