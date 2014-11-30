@@ -69,10 +69,13 @@ char **process_categories(char *fileName){
 			strcpy(new_string, token);
 			new_string[a] = '\0';
 			return_string[j] = new_string;
+			free(token);
 			j++;
 		}
 		free(fileString);
+		TKDestroy(tokenizer);
 		return_string[j] = NULL;
+		fclose(fp);
 		return return_string;
 	}
 }
@@ -149,6 +152,8 @@ int process_database(char *fileName){
 			add_db(newdb);
 		}
 		TKDestroy(tokenizer);
+		fclose(fp);
+		free(fileString);
 	}
 	return 0;
 }
@@ -210,6 +215,7 @@ void add_consumer_queue(char *category){
 	char *temp = (char*)malloc(len + 1);
 	strcpy(temp, category);
 	struct consumer_queue *new_item =(struct consumer_queue*)malloc(sizeof(struct consumer_queue));
+	memset(new_item, 0, sizeof(struct consumer_queue));
 	new_item->category = temp;
 	new_item->queue = create_queue();
 	if(get_consumer_queue(category) == NULL){
@@ -266,6 +272,7 @@ void *consumer_func(void *arg){
 			int len3 = strlen(process->title);
 			rej->title = (char*)malloc(len3 + 1);
 			strcpy(rej->title, process->title);
+			//printf("putting rejected order %s\n", rej->title);
 			rej->title[len3] = '\0';
 			rej->price = process->price;
 			enqueue(customer->rejected_orders, rej);
@@ -309,7 +316,8 @@ void *producer_func(void *arg){
 		TokenizerT *tokenizer = TKCreate("|\n", order);
 		char *token;
 		if((token = TKGetNextToken(tokenizer)) == NULL){
-		break;
+			TKDestroy(tokenizer);
+			break;
 		}	
 		//printf("stuck in loop \n");
 		struct order *send_order = (struct order*)malloc(sizeof(struct order));
@@ -335,8 +343,10 @@ void *producer_func(void *arg){
 		else{
 			enqueue(p, (void *)send_order);
 			TKDestroy(tokenizer);
-		}
 
+		}
+			
+	
 	}
 	struct consumer_queue *f;
 	for(f = consumer_queue; f != NULL; f = f->hh.next){
@@ -367,13 +377,14 @@ int main(int argc, char **argv){
 	int m = 0;
 	while(categories[m] != NULL){
 		add_consumer_queue(categories[m]);
-
-		char *category = (char*)malloc(strlen(categories[m] + 1));
+		char *category = (char*)malloc(strlen(categories[m]) + 1);
 		strcpy(category, categories[m]);
 		category[strlen(categories[m])] = '\0';
 
 		pthread_t cat_thread;
-		pthread_create(&cat_thread, NULL, consumer_func, category);		   struct category_thread *c_thread = (struct category_thread*)malloc(sizeof(struct category_thread));
+		pthread_create(&cat_thread, NULL, consumer_func, category);		   
+		struct category_thread *c_thread = (struct category_thread*)malloc(sizeof(struct category_thread));
+		memset(c_thread, 0, sizeof(struct category_thread));
 		c_thread->thread = cat_thread;
 		if(all_cat_threads == NULL){
 			all_cat_threads = c_thread;
@@ -383,6 +394,7 @@ int main(int argc, char **argv){
 			c_thread->next = all_cat_threads;
 			all_cat_threads = c_thread;
 		}
+		free(categories[m]);
 		m++;
 
 	}
@@ -401,17 +413,17 @@ int main(int argc, char **argv){
 	FILE *rt;
 	rt = fopen("finalreport.txt", "w");
 	HASH_ITER(hh, entries, trace, temp1){
-		fprintf(rt, "=== BEGIN CUSTOMER INFO ===\n###BALANCE###\nCustomer name:%s\nCustomer ID number: %d\nRemaining credit balance after all purchases (a dollar amount) %.2f\n###SUCCESSFUL ORDERS###\n", trace->name, trace->customer_id, trace->balance);
+		fprintf(rt, "=== BEGIN CUSTOMER INFO ===\n### BALANCE ###\nCustomer name: %s\nCustomer ID number: %d\nRemaining credit balance after all purchases (a dollar amount): %.2f\n### SUCCESSFUL ORDERS ###\n", trace->name, trace->customer_id, trace->balance);
 		struct successful_order *tr1;
 		while((tr1 = dequeue(trace->successful_orders))){
-			fprintf(rt, "%s|%.2f|%.2f\n", tr1->title, tr1->price, tr1->remaining_balance);
+			fprintf(rt, "\"%s\"|%.2f|%.2f\n", tr1->title, tr1->price, tr1->remaining_balance);
 			free(tr1->title);
 			free(tr1);
 		}
 		fprintf(rt, "### REJECTED ORDERS ###\n");
 		struct rejected_orders *tr2;
 		while((tr2 = dequeue(trace->rejected_orders))){
-			fprintf(rt, "%s|%.2f\n", tr2->title, tr2->price);
+			fprintf(rt, "\"%s\"|%.2f\n", tr2->title, tr2->price);
 			free(tr2->title);
 			free(tr2);
 		}
@@ -423,8 +435,10 @@ int main(int argc, char **argv){
 		g = g->next;
 		free(u);
 	}
+	fclose(rt);
 	free_db();
 	free_consumer_queues();
+	free(categories);
 	pthread_mutex_destroy(&lock_file);
 	pthread_mutex_destroy(&lock_database);
 	return 0;
