@@ -1,0 +1,6 @@
+"Alex Aguilera"|1|1000.00|"95 Senior Street, New Brunswick"|"New Jersey"|"08854"
+"Willy Wonka"|2|25.00|"500 Willy Wonka Place, Piscataway "|"New Jersey"|"07080"
+"My Friend"|3|45.00|"284 Your Boulevard, Westwood"|"New Jersey"|"08807"
+"That Guy"|4|8.00|"45 Kilmer Road, Edison"|"New Jersey"|"08817"
+"Who Isit"|5|100.00|"1234 Whoisit Way, New Brunswick"|"New Jersey"|"08830"
+

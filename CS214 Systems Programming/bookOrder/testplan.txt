@@ -1,0 +1,79 @@
+My test cases for this project were are from the files testdatabase.txt testorders.txt and testcategories.txt and this is my output from the final report which was correct:
+
+=== BEGIN CUSTOMER INFO ===
+### BALANCE ###
+Customer name: Alex Aguilera
+Customer ID number: 1
+Remaining credit balance after all purchases (a dollar amount): 455.54
+### SUCCESSFUL ORDERS ###
+"I Could Pee on This: And Other Poems by Cats"|37.49|962.51
+"The Handbuilt Home: 34 Simple Stylish and Budget-Friendly Woodworking Projects for Every Room"|1.22|961.29
+"Across Islands and Oceans"|21.99|939.30
+"Fifty Places to Dive Before You Die: Diving Experts Share the World's Greatest Destinations"|6.47|932.83
+"The Greatest Hockey Stories Ever Told: The Finest Writers on Ice"|59.71|873.12
+"The California Surf Project"|21.16|851.96
+"A Letter to My Dog: Notes to Our Best Friends"|143.47|708.49
+"SuperFreakonomics"|1.79|706.70
+"Underwater Dogs"|17.60|689.10
+"My Year in Meals"|1.91|687.19
+"How Children Succeed: Grit, Curiosity, and the Hidden Power of Character"|96.45|590.74
+"Damaged: The Heartbreaking True Story of a Forgotten Child"|10.99|579.75
+"Outliers: The Story of Success"|2.83|576.92
+"Star Wars: The Ultimate Action Figure Collection"|121.38|455.54
+### REJECTED ORDERS ###
+=== END CUSTOMER INFO ===
+
+=== BEGIN CUSTOMER INFO ===
+### BALANCE ###
+Customer name: Willy Wonka
+Customer ID number: 2
+Remaining credit balance after all purchases (a dollar amount): 9.50
+### SUCCESSFUL ORDERS ###
+"The Joy of Hate: How to Triumph over Whiners in the Age of Phony Outrage"|15.50|9.50
+### REJECTED ORDERS ###
+"The History of Surfing"|33.50
+"Soul Surfer: A True Story of Faith, Family, and Fighting to Get Back on the Board"|67.99
+"How to Create a Mind: The Secret of Human Thought Revealed"|160.40
+"Swimming Studies"|319.80
+=== END CUSTOMER INFO ===
+
+=== BEGIN CUSTOMER INFO ===
+### BALANCE ###
+Customer name: My Friend
+Customer ID number: 3
+Remaining credit balance after all purchases (a dollar amount): 19.06
+### SUCCESSFUL ORDERS ###
+"Soul Surfer"|7.99|37.01
+"Hockey; The Math of the Game (Sports Illustrated Kids: Sports Math)"|17.95|19.06
+### REJECTED ORDERS ###
+=== END CUSTOMER INFO ===
+
+=== BEGIN CUSTOMER INFO ===
+### BALANCE ###
+Customer name: That Guy
+Customer ID number: 4
+Remaining credit balance after all purchases (a dollar amount): 6.01
+### SUCCESSFUL ORDERS ###
+"The Outpost: An Untold Story of American Valor"|1.99|6.01
+### REJECTED ORDERS ###
+"Following Atticus (P.S.)"|22.99
+"The Immortal Life of Henrietta Lacks"|83.91
+"Stop Living In This Land. Go To The Everlasting World Of Happiness. Live There Forever."|17.19
+"365 Cats 2013 Page-A-Day Calendar"|29.66
+"Thomas Jefferson: The Art of Power"|118.98
+"Origami Fun Kit for Beginners (Dover Fun Kit)"|107.17
+=== END CUSTOMER INFO ===
+
+=== BEGIN CUSTOMER INFO ===
+### BALANCE ###
+Customer name: Who Isit
+Customer ID number: 5
+Remaining credit balance after all purchases (a dollar amount): 84.40
+### SUCCESSFUL ORDERS ###
+"The Endurance: Shackleton's Legendary Antarctic Expedition"|1.29|98.71
+"Tasting Beer: An Insider's Guide to the World's Greatest Drink"|14.31|84.40
+### REJECTED ORDERS ###
+=== END CUSTOMER INFO ===
+
+### TOTAL REVENUE GENERATED ### 
+603.49

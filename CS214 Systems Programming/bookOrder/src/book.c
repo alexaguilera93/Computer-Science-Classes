@@ -14,17 +14,12 @@
 #include <unistd.h>
 #include <limits.h>
 #include "queue.h"
-
 #define BUFFER_SIZE BUFSIZ
-
-
 #define FALSE 0
 #define TRUE 1
 
 pthread_mutex_t lock_file = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock_database = PTHREAD_MUTEX_INITIALIZER;
-
-
 
 //get categrories to start threads
 char **process_categories(char *fileName){
@@ -254,7 +249,7 @@ void *consumer_func(void *arg){
 	if(!p){
 		return NULL;
 	}
-
+	//int ch4 = 0;
 	while(p->isopen || p->length > 0){
 		//printf("loop 2\n");
 		if(p->length == 0){
@@ -345,8 +340,8 @@ void *producer_func(void *arg){
 			TKDestroy(tokenizer);
 
 		}
-			
-	
+
+
 	}
 	struct consumer_queue *f;
 	for(f = consumer_queue; f != NULL; f = f->hh.next){
@@ -411,12 +406,14 @@ int main(int argc, char **argv){
 
 	struct database *trace, *temp1;
 	FILE *rt;
+	float totalRev = 0;
 	rt = fopen("finalreport.txt", "w");
 	HASH_ITER(hh, entries, trace, temp1){
 		fprintf(rt, "=== BEGIN CUSTOMER INFO ===\n### BALANCE ###\nCustomer name: %s\nCustomer ID number: %d\nRemaining credit balance after all purchases (a dollar amount): %.2f\n### SUCCESSFUL ORDERS ###\n", trace->name, trace->customer_id, trace->balance);
 		struct successful_order *tr1;
 		while((tr1 = dequeue(trace->successful_orders))){
 			fprintf(rt, "\"%s\"|%.2f|%.2f\n", tr1->title, tr1->price, tr1->remaining_balance);
+			totalRev = totalRev + tr1->price;
 			free(tr1->title);
 			free(tr1);
 		}
@@ -429,6 +426,7 @@ int main(int argc, char **argv){
 		}
 		fprintf(rt, "=== END CUSTOMER INFO ===\n\n");
 	}
+	fprintf(rt, "### TOTAL REVENUE GENERATED ### \n%.2f\n", totalRev);
 	struct category_thread *g = all_cat_threads;
 	while(g != NULL){
 		struct category_thread *u = g;
