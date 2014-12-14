@@ -9,7 +9,7 @@ struct MemEnt_{
 };
 typedef struct MemEnt_ MemEnt;
 
-void *my_malloc(unsigned int size);
+void *my_malloc(unsigned int size, char *file, int line);
 
-void my_free(void *pointer);
+void my_free(void *pointer, char *file, int line);
 #endif

@@ -1,8 +1,16 @@
-makemymalloc = gcc -g -Wall mymalloc.c main.c -o test
-
-all:
-	$(makemymalloc)
-
-
+TARGET = mymalloc
+LIBS = -lm
+CC = gcc
+CFLAGS =
+default: $(TARGET)
+	all: default
+	OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
+	HEADERS = $(wildcard *.h)
+%.o: %.c $(HEADERS)
+	$(CC) $(CFLAGS) -c $< -o $@
+$(TARGET): $(OBJECTS)
+	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@
 clean:
-	rm test
+	-rm -f *.o
+	-rm -f $(TARGET)
+	-rm -f *~

@@ -11,7 +11,7 @@
 static char large_block[BSIZE];
 static char small_block[BSIZE];
 //return pointer to memory
-void *my_malloc(unsigned int size){
+void *my_malloc(unsigned int size, char *file, int line){
 	static int init = 0;
 	static MemEnt *root1 = 0;
 	static MemEnt *root2 = 0;
@@ -41,7 +41,7 @@ void *my_malloc(unsigned int size){
 			point = point->succ;
 		
 			if(point == 0){
-				fprintf(stderr, "Error, not enough memory left for your data to be alloced in file %s at line %d.\n",__FILE__,__LINE__);
+				fprintf(stderr, "Error, not enough memory left for your data to be alloced in file %s at line %d.\n", file,line);
 				return NULL;
 			}
 		}
@@ -72,14 +72,14 @@ void *my_malloc(unsigned int size){
 }
 
 
-void my_free(void *pointer){
+void my_free(void *pointer, char *file, int line){
 	MemEnt *ptr;
 	MemEnt *succ;
 	MemEnt *prev;
 
 	if((pointer < (void*)large_block || pointer > ((void*)large_block + BSIZE)) && (pointer < (void*)small_block || pointer > ((void*)small_block + BSIZE)))
 	{
-		fprintf(stderr, "Error trying to free pointer that was never allocated in file %s at line %d.\n",__FILE__,__LINE__);
+		fprintf(stderr, "Error trying to free pointer that was never allocated in file %s at line %d.\n",file,line);
 		return;
 	} 
 
@@ -103,12 +103,12 @@ void my_free(void *pointer){
 	}
 
 	if(validMem == 0){
-		fprintf(stderr, "Error: pointer was never alloced in file %s at line %d.\n",__FILE__,__LINE__);
+		fprintf(stderr, "Error: pointer was never alloced in file %s at line %d.\n",file,line);
 		return;
 	}
 	ptr = (MemEnt*)((char*)pointer - sizeof(MemEnt));
 	if(ptr->free){
-		fprintf(stderr, "Error:Multiple frees of same pointer without malloc in file %s at line %d.\n",__FILE__,__LINE__);
+		fprintf(stderr, "Error:Multiple frees of same pointer without malloc in file %s at line %d.\n",file,line);
 		return;
 	}
 	if(prev->free && (prev = ptr->prev) != 0){
